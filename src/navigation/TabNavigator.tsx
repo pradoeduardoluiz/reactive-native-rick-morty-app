@@ -4,39 +4,15 @@
  */
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text } from 'react-native';
 
+import { AboutScreen } from '../features/about/screens';
+import { CharactersListScreen } from '../features/characters/screens';
+import { FavoritesScreen } from '../features/favorites/screens';
 import { theme } from '../theme';
 import type { TabParamList } from './types';
 
 const Tab = createBottomTabNavigator<TabParamList>();
-
-/**
- * Placeholder screens - will be replaced with actual screens later
- */
-function CharactersScreen() {
-  return (
-    <View style={styles.placeholder}>
-      <Text style={styles.placeholderText}>Characters Screen</Text>
-    </View>
-  );
-}
-
-function FavoritesScreen() {
-  return (
-    <View style={styles.placeholder}>
-      <Text style={styles.placeholderText}>Favorites Screen</Text>
-    </View>
-  );
-}
-
-function AboutScreen() {
-  return (
-    <View style={styles.placeholder}>
-      <Text style={styles.placeholderText}>About Screen</Text>
-    </View>
-  );
-}
 
 /**
  * Tab Navigator Component
@@ -67,7 +43,7 @@ export function TabNavigator() {
     >
       <Tab.Screen
         name="Characters"
-        component={CharactersScreen}
+        component={CharactersListScreen}
         options={{
           title: 'Characters',
           tabBarIcon: ({ color }) => <Text style={{ fontSize: 24, color }}>👥</Text>,
@@ -92,17 +68,3 @@ export function TabNavigator() {
     </Tab.Navigator>
   );
 }
-
-const styles = StyleSheet.create({
-  placeholder: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: theme.colors.background,
-  },
-  placeholderText: {
-    fontSize: theme.typography.fontSize.xl,
-    fontWeight: theme.typography.fontWeight.bold,
-    color: theme.colors.text,
-  },
-});
