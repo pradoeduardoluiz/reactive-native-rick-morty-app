@@ -5,6 +5,7 @@
 App React Native + Expo consumindo a [Rick and Morty API](https://rickandmortyapi.com/documentation#rest) para listagem de personagens, detalhes e busca.
 
 ### Stack Tecnológica
+
 - **Framework**: React Native com Expo SDK 51+
 - **Linguagem**: TypeScript
 - **Gerenciamento de Estado**: Zustand
@@ -15,7 +16,9 @@ App React Native + Expo consumindo a [Rick and Morty API](https://rickandmortyap
 - **Testes**: Jest + React Native Testing Library
 
 ### Arquitetura
+
 **Feature-based Architecture** - Estrutura modular organizada por funcionalidades:
+
 ```
 src/
 ├── features/          # Módulos por funcionalidade
@@ -45,6 +48,7 @@ Cada prompt representa uma etapa específica do desenvolvimento e deve resultar 
 ### **FASE 1: Setup Inicial e Configuração**
 
 #### **Prompt 1: Inicialização do Projeto**
+
 ```
 Crie um novo projeto Expo com TypeScript usando o template blank-typescript.
 Configure o projeto com o nome "RickMortyApp".
@@ -62,6 +66,7 @@ Commit: "chore: initialize Expo project with TypeScript and core dependencies"
 ```
 
 #### **Prompt 2: Configuração de Lint e Format**
+
 ```
 Configure ESLint e Prettier para o projeto:
 - Adicione .eslintrc.js com regras para React Native e TypeScript
@@ -74,6 +79,7 @@ Commit: "chore: setup ESLint and Prettier configuration"
 ```
 
 #### **Prompt 3: Estrutura de Pastas**
+
 ```
 Crie a estrutura de pastas base do projeto:
 src/
@@ -100,6 +106,7 @@ Commit: "chore: create project folder structure"
 ### **FASE 2: Configuração Base**
 
 #### **Prompt 4: Configuração do Tema**
+
 ```
 Crie o sistema de tema em src/theme/:
 - colors.ts: defina paleta de cores (primary, secondary, background, text, etc.)
@@ -113,6 +120,7 @@ Commit: "feat: create theme system with colors, typography and spacing"
 ```
 
 #### **Prompt 5: Types da API**
+
 ```
 Crie os tipos TypeScript em src/shared/types/api.ts baseados na documentação:
 - Character (id, name, status, species, type, gender, origin, location, image, episode, url, created)
@@ -125,6 +133,7 @@ Commit: "feat: add TypeScript types for Rick and Morty API"
 ```
 
 #### **Prompt 6: Cliente da API**
+
 ```
 Crie o serviço de API em src/shared/services/api.ts:
 - Configure axios com baseURL: https://rickandmortyapi.com/api
@@ -136,6 +145,7 @@ Commit: "feat: setup axios API client"
 ```
 
 #### **Prompt 7: React Query Provider**
+
 ```
 Configure React Query em src/shared/services/queryClient.ts:
 - Crie QueryClient com configurações otimizadas
@@ -153,6 +163,7 @@ Commit: "feat: configure React Query for data fetching"
 ### **FASE 3: Navegação**
 
 #### **Prompt 8: Navegação Base**
+
 ```
 Configure a navegação base em src/navigation/:
 - types.ts: defina tipos para RootStackParamList e TabParamList
@@ -166,6 +177,7 @@ Commit: "feat: setup navigation structure with tabs and stack"
 ```
 
 #### **Prompt 9: Telas Placeholder**
+
 ```
 Crie telas placeholder em src/features/characters/screens/:
 - CharactersListScreen.tsx: exiba "Characters List"
@@ -185,6 +197,7 @@ Commit: "feat: create placeholder screens for navigation"
 ### **FASE 4: Feature de Personagens - Listagem**
 
 #### **Prompt 10: API Service para Characters**
+
 ```
 Crie src/features/characters/services/charactersApi.ts:
 - getCharacters(page: number): Promise<ApiResponse<Character>>
@@ -197,6 +210,7 @@ Commit: "feat(characters): create characters API service"
 ```
 
 #### **Prompt 11: Custom Hook para Listagem**
+
 ```
 Crie src/features/characters/hooks/useCharacters.ts:
 - Use React Query (useQuery)
@@ -207,6 +221,7 @@ Commit: "feat(characters): create useCharacters hook with pagination"
 ```
 
 #### **Prompt 12: Character Card Component**
+
 ```
 Crie src/features/characters/components/CharacterCard.tsx:
 - Componente que exibe card do personagem
@@ -219,6 +234,7 @@ Commit: "feat(characters): create CharacterCard component"
 ```
 
 #### **Prompt 13: Loading e Empty States**
+
 ```
 Crie componentes compartilhados em src/shared/components/:
 - LoadingSpinner.tsx: spinner customizado
@@ -229,6 +245,7 @@ Commit: "feat(shared): create loading, empty and error state components"
 ```
 
 #### **Prompt 14: Lista de Personagens**
+
 ```
 Implemente CharactersListScreen.tsx completo:
 - Use FlatList com useCharacters hook
@@ -246,6 +263,7 @@ Commit: "feat(characters): implement characters list with infinite scroll"
 ### **FASE 5: Feature de Personagens - Detalhes**
 
 #### **Prompt 15: Custom Hook para Detalhes**
+
 ```
 Crie src/features/characters/hooks/useCharacter.ts:
 - Use React Query (useQuery)
@@ -256,6 +274,7 @@ Commit: "feat(characters): create useCharacter hook for details"
 ```
 
 #### **Prompt 16: Tela de Detalhes**
+
 ```
 Implemente CharacterDetailScreen.tsx completo:
 - Receba characterId via route params
@@ -276,6 +295,7 @@ Commit: "feat(characters): implement character detail screen"
 ### **FASE 6: Busca de Personagens**
 
 #### **Prompt 17: Search Bar Component**
+
 ```
 Crie src/shared/components/SearchBar.tsx:
 - Input de busca com ícone
@@ -288,6 +308,7 @@ Commit: "feat(shared): create SearchBar component with debounce"
 ```
 
 #### **Prompt 18: Custom Hook para Busca**
+
 ```
 Crie src/features/characters/hooks/useSearchCharacters.ts:
 - Use React Query com searchQuery como key
@@ -298,6 +319,7 @@ Commit: "feat(characters): create useSearchCharacters hook"
 ```
 
 #### **Prompt 19: Implementar Busca na Lista**
+
 ```
 Atualize CharactersListScreen.tsx:
 - Adicione SearchBar no header
@@ -313,6 +335,7 @@ Commit: "feat(characters): implement search functionality in characters list"
 ### **FASE 7: Feature de Favoritos**
 
 #### **Prompt 20: Zustand Store para Favoritos**
+
 ```
 Crie src/shared/stores/favoritesStore.ts:
 - Estado: favorites (array de character ids)
@@ -323,6 +346,7 @@ Commit: "feat(favorites): create favorites store with Zustand and persistence"
 ```
 
 #### **Prompt 21: Botão de Favoritar**
+
 ```
 Crie src/features/characters/components/FavoriteButton.tsx:
 - Botão de coração (filled/outline)
@@ -336,6 +360,7 @@ Commit: "feat(favorites): create favorite button component"
 ```
 
 #### **Prompt 22: Tela de Favoritos**
+
 ```
 Implemente src/features/favorites/screens/FavoritesScreen.tsx:
 - Busque personagens favoritos usando seus IDs
@@ -352,6 +377,7 @@ Commit: "feat(favorites): implement favorites screen"
 ### **FASE 8: Melhorias e Polimento**
 
 #### **Prompt 23: Tela About**
+
 ```
 Implemente src/features/about/screens/AboutScreen.tsx:
 - Informações sobre o app
@@ -364,6 +390,7 @@ Commit: "feat(about): implement about screen"
 ```
 
 #### **Prompt 24: Ícones da Tab Bar**
+
 ```
 Instale e configure @expo/vector-icons:
 - Adicione ícones apropriados para cada tab
@@ -376,6 +403,7 @@ Commit: "feat(navigation): add icons to bottom tab bar"
 ```
 
 #### **Prompt 25: Splash Screen**
+
 ```
 Configure splash screen customizada:
 - Use expo-splash-screen
@@ -387,6 +415,7 @@ Commit: "feat: configure custom splash screen"
 ```
 
 #### **Prompt 26: App Icon**
+
 ```
 Crie e configure o ícone do app:
 - Design de ícone temático Rick and Morty
@@ -397,6 +426,7 @@ Commit: "feat: add custom app icon"
 ```
 
 #### **Prompt 27: Tratamento de Erros Global**
+
 ```
 Implemente error boundary:
 - Crie src/shared/components/ErrorBoundary.tsx
@@ -408,6 +438,7 @@ Commit: "feat(shared): implement error boundary"
 ```
 
 #### **Prompt 28: Performance Optimization**
+
 ```
 Otimize performance:
 - Adicione React.memo em componentes pesados
@@ -423,6 +454,7 @@ Commit: "perf: optimize component rendering"
 ### **FASE 9: Testes (Opcional)**
 
 #### **Prompt 29: Setup de Testes**
+
 ```
 Configure ambiente de testes:
 - Instale @testing-library/react-native
@@ -434,6 +466,7 @@ Commit: "test: setup testing environment"
 ```
 
 #### **Prompt 30: Testes de Componentes**
+
 ```
 Crie testes para componentes principais:
 - CharacterCard.test.tsx
@@ -445,6 +478,7 @@ Commit: "test: add component tests"
 ```
 
 #### **Prompt 31: Testes de Hooks**
+
 ```
 Crie testes para hooks customizados:
 - useCharacters.test.ts
@@ -459,6 +493,7 @@ Commit: "test: add custom hooks tests"
 ### **FASE 10: Documentação**
 
 #### **Prompt 32: README**
+
 ```
 Crie README.md completo com:
 - Descrição do projeto
@@ -474,6 +509,7 @@ Commit: "docs: create comprehensive README"
 ```
 
 #### **Prompt 33: Documentação de Código**
+
 ```
 Adicione JSDoc nos principais arquivos:
 - Serviços de API
@@ -509,6 +545,7 @@ Commit: "docs: add JSDoc comments to core modules"
 ## 🎯 Features Futuras (Expansão)
 
 Após completar o roadmap básico, considere:
+
 - Filtros avançados (por status, espécie, gênero)
 - Feature de Episodes
 - Feature de Locations
