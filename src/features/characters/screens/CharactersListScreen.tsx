@@ -1,35 +1,45 @@
 /**
  * Characters List Screen
- * Displays a list of all characters from Rick and Morty with infinite scroll
+ * Displays a list of all characters from Rick and Morty with infinite scroll and search
  */
 
+import { useCallback, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
-import { useCallback } from 'react';
 
 import { theme } from '../../../theme';
 import type { TabScreenProps } from '../../../navigation/types';
 import { useCharacters } from '../hooks/useCharacters';
+import { useSearchCharacters } from '../hooks/useSearchCharacters';
 import { CharacterCard } from '../components/CharacterCard';
-import { LoadingSpinner, EmptyState, ErrorState } from '../../../shared/components';
+import { EmptyState, ErrorState, LoadingSpinner, SearchBar } from '../../../shared/components';
 import type { Character } from '../../../shared/types';
 
 type Props = TabScreenProps<'Characters'>;
 
 export function CharactersListScreen({ navigation }: Props) {
-  const {
-    data,
-    isLoading,
-    error,
-    refetch,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useCharacters();
+  const [searchQuery, setSearchQuery] = useState('');
+  const isSearching = searchQuery.trim().length > 0;
 
-  // Extract all characters from pages
+  // Always call both hooks; `enabled` inside useSearchCharacters handles the guard
+  const browseHook = useCharacters();
+  const searchHook = useSearchCharacters(searchQuery);
+
+  // Pick active hook results based on mode
+  const { data, isLoading, error, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    isSearching ? searchHook : browseHook;
+
+  // Flatten pages into a single character array
   const characters = data?.pages.flatMap(page => page.results) ?? [];
 
-  // Handle character press
+  // Total count label
+  const totalCount: number | undefined = isSearching
+    ? searchHook.data?.pages[0]?.info.count
+    : browseHook.data?.pages[0]?.info.count;
+
+  // ---------------------------------------------------------------------------
+  // Handlers
+  // ---------------------------------------------------------------------------
+
   const handleCharacterPress = useCallback(
     (characterId: number) => {
       navigation.navigate('CharacterDetail', { characterId });
@@ -37,25 +47,71 @@ export function CharactersListScreen({ navigation }: Props) {
     [navigation]
   );
 
-  // Handle load more
   const handleLoadMore = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // Handle retry
   const handleRetry = useCallback(() => {
     refetch();
   }, [refetch]);
 
-  // Render loading state
+  const handleSearch = useCallback((text: string) => {
+    setSearchQuery(text);
+  }, []);
+
+  const handleClear = useCallback(() => {
+    setSearchQuery('');
+  }, []);
+
+  // ---------------------------------------------------------------------------
+  // Sub-renders
+  // ---------------------------------------------------------------------------
+
+  const renderHeader = () => (
+    <View style={styles.header}>
+      <Text style={styles.headerTitle}>Characters</Text>
+      {totalCount !== undefined && (
+        <Text style={styles.headerSubtitle}>
+          {isSearching
+            ? `${totalCount} result${totalCount !== 1 ? 's' : ''} for "${searchQuery}"`
+            : `${totalCount} characters`}
+        </Text>
+      )}
+      <View style={styles.searchBarWrapper}>
+        <SearchBar
+          value={searchQuery}
+          onChangeText={handleSearch}
+          onClear={handleClear}
+          placeholder="Search characters..."
+        />
+      </View>
+    </View>
+  );
+
+  const renderFooter = () =>
+    isFetchingNextPage ? (
+      <View style={styles.footer}>
+        <LoadingSpinner size="small" message="Loading more..." />
+      </View>
+    ) : null;
+
+  const renderItem = useCallback(
+    ({ item }: { item: Character }) => (
+      <CharacterCard character={item} onPress={() => handleCharacterPress(item.id)} />
+    ),
+    [handleCharacterPress]
+  );
+
+  // ---------------------------------------------------------------------------
+  // States: loading / error / empty
+  // ---------------------------------------------------------------------------
+
   if (isLoading) {
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Characters</Text>
-        </View>
+        {renderHeader()}
         <View style={styles.centered}>
           <LoadingSpinner size="large" message="Loading characters..." />
         </View>
@@ -63,13 +119,10 @@ export function CharactersListScreen({ navigation }: Props) {
     );
   }
 
-  // Render error state
   if (error) {
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Characters</Text>
-        </View>
+        {renderHeader()}
         <View style={styles.centered}>
           <ErrorState
             title="Oops!"
@@ -81,54 +134,42 @@ export function CharactersListScreen({ navigation }: Props) {
     );
   }
 
-  // Render empty state
   if (characters.length === 0) {
+    const emptyTitle = isSearching ? 'Nenhum resultado encontrado' : 'No Characters Found';
+    const emptyMessage = isSearching
+      ? `We couldn't find any characters matching "${searchQuery}". Try a different name.`
+      : 'There are no characters to display.';
+
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Characters</Text>
-        </View>
+        {renderHeader()}
         <View style={styles.centered}>
-          <EmptyState
-            icon="🔍"
-            title="No Characters Found"
-            message="There are no characters to display."
-          />
+          <EmptyState icon={isSearching ? '🔍' : '👽'} title={emptyTitle} message={emptyMessage} />
         </View>
       </View>
     );
   }
 
-  // Render list
+  // ---------------------------------------------------------------------------
+  // Main list
+  // ---------------------------------------------------------------------------
+
   return (
     <View style={styles.container}>
       <FlatList
         data={characters}
         keyExtractor={item => item.id.toString()}
-        renderItem={({ item }) => (
-          <CharacterCard character={item} onPress={() => handleCharacterPress(item.id)} />
-        )}
+        renderItem={renderItem}
         contentContainerStyle={styles.listContent}
-        ListHeaderComponent={
-          <View style={styles.header}>
-            <Text style={styles.headerTitle}>Characters</Text>
-            <Text style={styles.headerSubtitle}>
-              {data?.pages[0]?.info.count ? `${data.pages[0].info.count} characters` : ''}
-            </Text>
-          </View>
-        }
-        ListFooterComponent={
-          isFetchingNextPage ? (
-            <View style={styles.footer}>
-              <LoadingSpinner message="Loading more..." />
-            </View>
-          ) : null
-        }
+        ListHeaderComponent={renderHeader}
+        ListFooterComponent={renderFooter}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.5}
         refreshing={false}
         onRefresh={refetch}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
       />
     </View>
   );
@@ -161,6 +202,10 @@ const styles = StyleSheet.create({
     fontSize: theme.typography.fontSize.sm,
     color: theme.colors.textSecondary,
     fontWeight: theme.typography.fontWeight.medium,
+    marginBottom: theme.spacing.md,
+  },
+  searchBarWrapper: {
+    marginTop: theme.spacing.xs,
   },
   listContent: {
     paddingBottom: theme.spacing.xl,
