@@ -3,8 +3,7 @@
  * Displays detailed information about a specific character
  */
 
-import { useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { ErrorState } from '../../../shared/components/ErrorState';
 import { LoadingSpinner } from '../../../shared/components/LoadingSpinner';
@@ -12,6 +11,7 @@ import { theme } from '../../../theme';
 import type { Character } from '../../../shared/types/api';
 import type { RootStackScreenProps } from '../../../navigation/types';
 import { useCharacter } from '../hooks/useCharacter';
+import { FavoriteButton } from '../components/FavoriteButton';
 
 type Props = RootStackScreenProps<'CharacterDetail'>;
 
@@ -36,7 +36,6 @@ const extractEpisodeCode = (url: string): string => {
 export function CharacterDetailScreen({ route }: Props) {
   const { characterId } = route.params;
   const { data: character, isLoading, error } = useCharacter(characterId);
-  const [isFavorite, setIsFavorite] = useState(false);
 
   if (isLoading) {
     return <LoadingSpinner message="Loading character..." />;
@@ -63,18 +62,9 @@ export function CharacterDetailScreen({ route }: Props) {
       {/* Hero image */}
       <View style={styles.imageContainer}>
         <Image source={{ uri: character.image }} style={styles.image} />
-        <Pressable
-          style={({ pressed }) => [
-            styles.favoriteButton,
-            isFavorite && styles.favoriteButtonActive,
-            pressed && styles.favoriteButtonPressed,
-          ]}
-          onPress={() => setIsFavorite(prev => !prev)}
-          accessibilityLabel={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-          accessibilityRole="button"
-        >
-          <Text style={styles.favoriteIcon}>{isFavorite ? '❤️' : '🤍'}</Text>
-        </Pressable>
+        <View style={styles.favoriteButtonWrapper}>
+          <FavoriteButton characterId={characterId} size="lg" />
+        </View>
       </View>
 
       {/* Name & status */}
@@ -170,31 +160,10 @@ const styles = StyleSheet.create({
   },
 
   // Favorite button
-  favoriteButton: {
+  favoriteButtonWrapper: {
     position: 'absolute',
     bottom: theme.spacing.md,
     right: theme.spacing.md,
-    width: 48,
-    height: 48,
-    borderRadius: theme.borderRadius.full,
-    backgroundColor: theme.colors.surface,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-  },
-  favoriteButtonActive: {
-    backgroundColor: '#fff0f0',
-  },
-  favoriteButtonPressed: {
-    opacity: 0.7,
-    transform: [{ scale: 0.95 }],
-  },
-  favoriteIcon: {
-    fontSize: 22,
   },
 
   // Header (name + status)

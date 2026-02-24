@@ -3,3 +3,4 @@
  */
 
 export * from './CharacterCard';
+export * from './FavoriteButton';

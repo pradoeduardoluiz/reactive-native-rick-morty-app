@@ -3,11 +3,12 @@
  * Displays a character card with image, name, species, and status
  */
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { theme } from '../../../theme';
 import type { Character } from '../../../shared/types/api';
+import { FavoriteButton } from './FavoriteButton';
 
 interface CharacterCardProps {
   character: Character;
@@ -35,16 +36,23 @@ const getStatusColor = (status: Character['status']): string => {
 export const CharacterCard = React.memo<CharacterCardProps>(({ character, onPress }) => {
   const statusColor = getStatusColor(character.status);
 
+  const handlePress = useCallback(() => {
+    onPress(character.id);
+  }, [character.id, onPress]);
+
   return (
     <Pressable
       style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
-      onPress={() => onPress(character.id)}
+      onPress={handlePress}
     >
       <Image source={{ uri: character.image }} style={styles.image} />
       <View style={styles.content}>
-        <Text style={styles.name} numberOfLines={1}>
-          {character.name}
-        </Text>
+        <View style={styles.nameRow}>
+          <Text style={styles.name} numberOfLines={1}>
+            {character.name}
+          </Text>
+          <FavoriteButton characterId={character.id} size="sm" />
+        </View>
         <Text style={styles.species} numberOfLines={1}>
           {character.species}
         </Text>
@@ -86,11 +94,18 @@ const styles = StyleSheet.create({
     padding: theme.spacing.md,
     justifyContent: 'center',
   },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: theme.spacing.xs,
+    gap: theme.spacing.xs,
+  },
   name: {
     fontSize: theme.typography.fontSize.lg,
     fontWeight: theme.typography.fontWeight.bold,
     color: theme.colors.text,
-    marginBottom: theme.spacing.xs,
+    flex: 1,
   },
   species: {
     fontSize: theme.typography.fontSize.base,
